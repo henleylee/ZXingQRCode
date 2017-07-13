@@ -40,12 +40,13 @@ public class GeneratorActivity extends AppCompatActivity {
         qrcode6 = (ImageView) findViewById(R.id.qrcode6);
 
         Bitmap bitmap = drawableToBitmap(getResources().getDrawable(R.mipmap.ic_launcher));
+        Bitmap bitmap2 = drawableToBitmap(getResources().getDrawable(R.drawable.sample_big_xh));
         qrcode1.setImageBitmap(EncodingHandler.createQRCode(URL));
         qrcode2.setImageBitmap(EncodingHandler.createQRCode(URL, CUSTOM_COLOR));
         qrcode3.setImageBitmap(EncodingHandler.createQRCodeWithLogo(URL, bitmap));
         qrcode4.setImageBitmap(EncodingHandler.createQRCodeWithLogo(URL, bitmap, CUSTOM_COLOR));
         qrcode5.setImageBitmap(EncodingHandler.createQRCodeWithLogo2(URL, bitmap));
-        qrcode6.setImageBitmap(EncodingHandler.createQRCodeWithBackground(URL, bitmap));
+        qrcode6.setImageBitmap(EncodingHandler.createQRCodeWithBackground(URL, bitmap2));
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {

@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
                 break;
-            case R.id.button2: // 产生条形码
+            case R.id.button2: // 生成条形码
                 String content = qrStrEditText.getText().toString();
                 int size = content.length();
                 for (int i = 0; i < size; i++) {
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mTextView.setText(content);
                 }
                 break;
-            case R.id.button3: // 产生二维码
+            case R.id.button3: // 生成二维码
                 String contentString = qrStrEditText.getText().toString();
                 if (!contentString.equals("")) {
                     Bitmap qrCodeBitmap = EncodingHandler.createQRCode(contentString);
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(getApplicationContext(), "Text can be not empty", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.button4: // 产生二维码
+            case R.id.button4: // 生成二维码
                 startActivity(new Intent(this, GeneratorActivity.class));
                 break;
             case R.id.button5: // 识别二维码/条形码

@@ -13,7 +13,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import java.util.Hashtable;
 
 /**
- * 生成二维码、条形码
+ * 二维码/条形码生成辅助类
  *
  * @author liyunlong
  * @date 2017/2/3 16:08
@@ -100,7 +100,7 @@ public class EncodingHandler {
 
 
     /**
-     * 生成二维码(二维码默认颜色为黑色)
+     * 生成二维码(二维码默认大小为500*500)
      *
      * @param content 二维码内容
      * @param color   二维码颜色
@@ -164,7 +164,7 @@ public class EncodingHandler {
     }
 
     /**
-     * 生成带Logo的二维码(二维码默认颜色为黑色)
+     * 生成带Logo的二维码(二维码默认大小为500*500)
      *
      * @param content 二维码内容
      * @param bitmap  二维码Logo
@@ -254,6 +254,17 @@ public class EncodingHandler {
      * @param bitmap  二维码Logo
      */
     public static Bitmap createQRCodeWithLogo2(String content, int size, Bitmap bitmap) {
+        return createQRCodeWithLogo2(content, DEFAULT_QRCODE_WIDTH, bitmap, 0xFF0094FF, 0xFFFED545, 0xFF000000, 0xFF5ACF00);
+    }
+
+    /**
+     * 生成带Logo的二维码
+     *
+     * @param content 二维码内容
+     * @param size    二维码内容大小
+     * @param bitmap  二维码Logo
+     */
+    public static Bitmap createQRCodeWithLogo2(String content, int size, Bitmap bitmap, int leftTopColor, int leftBottomColor, int rightTopColor, int rightBottomColor) {
         try {
             int logoHalfWidth = size / 10;
             Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
@@ -291,13 +302,13 @@ public class EncodingHandler {
                     } else {
                         if (bitMatrix.get(x, y)) {
                             if (x < size / 2 && y <= size / 2) { // 左上角
-                                pixels[y * size + x] = 0xFF0094FF;// 蓝色
+                                pixels[y * size + x] = leftTopColor;// 蓝色
                             } else if (x <= size / 2 && y >= size / 2) { // 左下角
-                                pixels[y * size + x] = 0xFFFED545;// 黄色
-                            } else if (x >= size / 2 && y >= size / 2) { // 右上角
-                                pixels[y * size + x] = 0xFF5ACF00;// 绿色
-                            } else {
-                                pixels[y * size + x] = 0xFF000000;// 黑色
+                                pixels[y * size + x] = leftBottomColor;// 黄色
+                            } else if (x >= size / 2 && y < size / 2) { // 右上角
+                                pixels[y * size + x] = rightTopColor;// 绿色
+                            } else { // 右下角
+                                pixels[y * size + x] = rightBottomColor;// 黑色
                             }
                         } else {
                             pixels[y * size + x] = WHITE;
