@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -29,8 +30,6 @@ import java.util.Vector;
 
 /**
  * Initial the camera
- *
- * @author Ryan.Tang
  */
 public class MipcaActivityCapture extends Activity implements Callback {
 
@@ -56,6 +55,7 @@ public class MipcaActivityCapture extends Activity implements Callback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
 
+        findViewById(android.R.id.content).setBackgroundColor(Color.TRANSPARENT);
         //ViewUtil.addTopView(getApplicationContext(), this, R.string.scan_card);
         CameraManager.init(getApplication());
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
@@ -189,8 +189,7 @@ public class MipcaActivityCapture extends Activity implements Callback {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnCompletionListener(beepListener);
 
-            AssetFileDescriptor file = getResources().openRawResourceFd(
-                    R.raw.beep);
+            AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.beep);
             try {
                 mediaPlayer.setDataSource(file.getFileDescriptor(),
                         file.getStartOffset(), file.getLength());

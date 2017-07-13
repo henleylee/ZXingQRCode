@@ -43,8 +43,4 @@ proguard/
 captures/
 map.txt
 
-#Android buildTool
-buildTool/repo/
-buildTool/channelApkBuild/build/
-
 #the end of .gitignore

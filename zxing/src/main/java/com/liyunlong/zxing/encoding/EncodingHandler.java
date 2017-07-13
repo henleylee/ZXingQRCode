@@ -14,6 +14,9 @@ import java.util.Hashtable;
 
 /**
  * 生成二维码、条形码
+ *
+ * @author liyunlong
+ * @date 2017/2/3 16:08
  */
 public class EncodingHandler {
 

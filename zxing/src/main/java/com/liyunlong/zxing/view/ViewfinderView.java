@@ -134,7 +134,7 @@ public final class ViewfinderView extends View {
         resultColor = resources.getColor(R.color.result_view);
 
         resultPointColor = resources.getColor(R.color.possible_result_points);
-        possibleResultPoints = new HashSet<ResultPoint>(5);
+        possibleResultPoints = new HashSet<>(5);
     }
 
     @Override

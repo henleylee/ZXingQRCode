@@ -35,8 +35,11 @@ public class DecodeBitmap {
         view.buildDrawingCache();
         //从缓存中获取当前屏幕的图片,创建一个DrawingCache的拷贝，因为DrawingCache得到的位图在禁用后会被回收
         Bitmap bitmap = view.getDrawingCache();
-        bitmap = Bitmap.createBitmap(bitmap);
-        Result result = parseQRcodeFromBitmap(bitmap);
+        Result result = null;
+        if (bitmap != null) {
+            bitmap = Bitmap.createBitmap(bitmap);
+            result = parseQRcodeFromBitmap(bitmap);
+        }
         //禁用DrawingCahce否则会影响性能 ,而且不禁止会导致每次截图到保存的是第一次截图缓存的位图
         view.setDrawingCacheEnabled(false);
         return result;

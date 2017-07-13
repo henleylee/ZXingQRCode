@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
 import com.liyunlong.zxing.encoding.EncodingHandler;
@@ -31,9 +30,7 @@ public class GeneratorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generator);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("花式二维码");
-        setSupportActionBar(toolbar);
+        setTitle("花式二维码");
 
         qrcode1 = (ImageView) findViewById(R.id.qrcode1);
         qrcode2 = (ImageView) findViewById(R.id.qrcode2);
