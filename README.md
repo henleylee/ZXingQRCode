@@ -2,7 +2,7 @@
 
 ## 效果演示 ##
 #### 功能展示： ####
-![](/screenshots/功能展示.jpg)
+![](/screenshots/功能展示.png)
 #### 花式二维码： ####
 ![](/screenshots/花式二维码.png)
 
