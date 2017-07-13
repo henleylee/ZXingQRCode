@@ -61,6 +61,7 @@
         mImageView.setImageBitmap(qrCodeBitmap); // 展示生成的二维码
     }
 ```
+
 ## 4. 识别二维码/条形码(DecodeBitmap：解析图片辅助类) ##
 #### 4.1 根据View获取图片，并解析二维码将结果封装在Result对象中： ####
 ```java
@@ -76,6 +77,7 @@
 ```java
     public static Result parseQRcodeFromBitmap(Bitmap bitmap)
 ```
+
 注意：前两种方式得到图片后最终都会调用第三种方式。
 
 ## 5. 花式二维码(EncodingHandler：二维码/条形码生成辅助类) ##
