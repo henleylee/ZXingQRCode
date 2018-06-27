@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -40,22 +41,11 @@ public final class CameraManager {
     private static final int MIN_FRAME_WIDTH = 240;
     private static final int MIN_FRAME_HEIGHT = 240;
     private static final int MAX_FRAME_WIDTH = 480;
-    private static final int MAX_FRAME_HEIGHT = 480;
+    private static final int MAX_FRAME_HEIGHT = 360;
 
     private static CameraManager cameraManager;
 
-    static final int SDK_INT; // Later we can use Build.VERSION.SDK_INT
-
-    static {
-        int sdkInt;
-        try {
-            sdkInt = Build.VERSION.SDK_INT;
-        } catch (NumberFormatException nfe) {
-            // Just to be safe
-            sdkInt = 10000;
-        }
-        SDK_INT = sdkInt;
-    }
+    static final int SDK_INT = Build.VERSION.SDK_INT; // Later we can use Build.VERSION.SDK_INT
 
     private final Context context;
     private final CameraConfigurationManager configManager;
@@ -131,12 +121,10 @@ public final class CameraManager {
             }
             configManager.setDesiredCameraParameters(camera);
 
-            //FIXME
-            //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            //�Ƿ�ʹ��ǰ��
-//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
-//        FlashlightManager.enableFlashlight();
-//      }
+//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+//            if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
+//                FlashlightManager.enableFlashlight();
+//            }
             FlashlightManager.enableFlashlight();
         }
     }
@@ -211,6 +199,29 @@ public final class CameraManager {
     }
 
     /**
+     * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
+     * not UI / screen.
+     */
+    public Rect getFramingRectInPreview() {
+        if (framingRectInPreview == null) {
+            Rect rect = new Rect(getFramingRect());
+            Point cameraResolution = configManager.getCameraResolution();
+            Point screenResolution = configManager.getScreenResolution();
+            //modify here
+//      rect.left = rect.left * cameraResolution.x / screenResolution.x;
+//      rect.right = rect.right * cameraResolution.x / screenResolution.x;
+//      rect.top = rect.top * cameraResolution.y / screenResolution.y;
+//      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            rect.left = rect.left * cameraResolution.y / screenResolution.x;
+            rect.right = rect.right * cameraResolution.y / screenResolution.x;
+            rect.top = rect.top * cameraResolution.x / screenResolution.y;
+            rect.bottom = rect.bottom * cameraResolution.x / screenResolution.y;
+            framingRectInPreview = rect;
+        }
+        return framingRectInPreview;
+    }
+
+    /**
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
      * far enough away to ensure the image will be in focus.
@@ -218,6 +229,33 @@ public final class CameraManager {
      * @return The rectangle to draw on screen in window coordinates.
      */
     public Rect getFramingRect() {
+        Point screenResolution = configManager.getScreenResolution();
+        if (screenResolution == null)
+            return null;
+        if (framingRect == null) {
+            if (camera == null) {
+                return null;
+            }
+
+            //修改之后
+            int width = screenResolution.x * 7 / 10;
+            int height = screenResolution.y * 7 / 10;
+
+            if (height >= width) { //竖屏
+                height = width;
+            } else { //横屏
+                width = height;
+            }
+
+            int leftOffset = (screenResolution.x - width) / 2;
+            int topOffset = (screenResolution.y - height) / 2;
+            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
+
+        }
+        return framingRect;
+    }
+
+    public Rect getFramingRect2() {
         Point screenResolution = configManager.getScreenResolution();
         if (framingRect == null) {
             if (camera == null) {
@@ -241,29 +279,6 @@ public final class CameraManager {
             Log.d(TAG, "Calculated framing rect: " + framingRect);
         }
         return framingRect;
-    }
-
-    /**
-     * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
-     * not UI / screen.
-     */
-    public Rect getFramingRectInPreview() {
-        if (framingRectInPreview == null) {
-            Rect rect = new Rect(getFramingRect());
-            Point cameraResolution = configManager.getCameraResolution();
-            Point screenResolution = configManager.getScreenResolution();
-            //modify here
-//      rect.left = rect.left * cameraResolution.x / screenResolution.x;
-//      rect.right = rect.right * cameraResolution.x / screenResolution.x;
-//      rect.top = rect.top * cameraResolution.y / screenResolution.y;
-//      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
-            rect.left = rect.left * cameraResolution.y / screenResolution.x;
-            rect.right = rect.right * cameraResolution.y / screenResolution.x;
-            rect.top = rect.top * cameraResolution.x / screenResolution.y;
-            rect.bottom = rect.bottom * cameraResolution.x / screenResolution.y;
-            framingRectInPreview = rect;
-        }
-        return framingRectInPreview;
     }
 
     /**
@@ -307,22 +322,94 @@ public final class CameraManager {
                 // This format has never been seen in the wild, but is compatible as we only care
                 // about the Y channel, so allow it.
             case PixelFormat.YCbCr_422_SP:
-                return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top,
-                        rect.width(), rect.height());
+                return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top, rect.width(), rect.height());
             default:
                 // The Samsung Moment incorrectly uses this variant instead of the 'sp' version.
                 // Fortunately, it too has all the Y data up front, so we can read it.
                 if ("yuv420p".equals(previewFormatString)) {
-                    return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top,
-                            rect.width(), rect.height());
+                    return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top, rect.width(), rect.height());
                 }
         }
-        throw new IllegalArgumentException("Unsupported picture format: " +
-                previewFormat + '/' + previewFormatString);
+        throw new IllegalArgumentException("Unsupported picture format: " + previewFormat + '/' + previewFormatString);
     }
 
     public Context getContext() {
         return context;
     }
 
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public boolean isPreviewing() {
+        return previewing;
+    }
+
+    public void setPreviewing(boolean previewing) {
+        this.previewing = previewing;
+    }
+
+    public boolean isUseOneShotPreviewCallback() {
+        return useOneShotPreviewCallback;
+    }
+
+    public PreviewCallback getPreviewCallback() {
+        return previewCallback;
+    }
+
+    public AutoFocusCallback getAutoFocusCallback() {
+        return autoFocusCallback;
+    }
+
+    public Point getCameraResolution() {
+        return configManager.getCameraResolution();
+    }
+
+    /**
+     * 打开或关闭闪光灯
+     *
+     * @param isOpen 是否开启闪光灯
+     * @return boolean 操作成功/失败。
+     */
+    public boolean setFlashLight(boolean isOpen) {
+        if (camera == null || !previewing) {
+            return false;
+        }
+        Camera.Parameters parameters = camera.getParameters();
+        if (parameters == null) {
+            return false;
+        }
+        List<String> flashModes = parameters.getSupportedFlashModes();
+        // 检查手机是否有闪光灯
+        if (null == flashModes || 0 == flashModes.size()) {
+            // 没有闪光灯则返回
+            return false;
+        }
+        String flashMode = parameters.getFlashMode();
+        if (isOpen) {
+            if (Camera.Parameters.FLASH_MODE_TORCH.equals(flashMode)) {
+                return true;
+            }
+            // 开启
+            if (flashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                camera.setParameters(parameters);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (Camera.Parameters.FLASH_MODE_OFF.equals(flashMode)) {
+                return true;
+            }
+            // 关闭
+            if (flashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                camera.setParameters(parameters);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 }

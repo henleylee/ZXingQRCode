@@ -28,11 +28,12 @@ import android.util.Log;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.liyunlong.zxing.R;
-import com.liyunlong.zxing.activity.MipcaActivityCapture;
+import com.liyunlong.zxing.activity.CaptureActivity;
 import com.liyunlong.zxing.camera.CameraManager;
 import com.liyunlong.zxing.view.ViewfinderResultPointCallback;
 
 import java.util.Vector;
+
 
 /**
  * This class handles all the messaging which comprises the state machine for capture.
@@ -41,7 +42,7 @@ public final class CaptureActivityHandler extends Handler {
 
     private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
-    private final MipcaActivityCapture activity;
+    private final CaptureActivity activity;
     private final DecodeThread decodeThread;
     private State state;
 
@@ -51,11 +52,10 @@ public final class CaptureActivityHandler extends Handler {
         DONE
     }
 
-    public CaptureActivityHandler(MipcaActivityCapture activity, Vector<BarcodeFormat> decodeFormats,
+    public CaptureActivityHandler(CaptureActivity activity, Vector<BarcodeFormat> decodeFormats,
                                   String characterSet) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity, decodeFormats, characterSet,
-                new ViewfinderResultPointCallback(activity.getViewfinderView()));
+        decodeThread = new DecodeThread(activity, decodeFormats, characterSet, new ViewfinderResultPointCallback(activity.getViewfinderView()));
         decodeThread.start();
         state = State.SUCCESS;
         // Start ourselves capturing previews and decoding.
@@ -79,12 +79,11 @@ public final class CaptureActivityHandler extends Handler {
             Log.d(TAG, "Got decode succeeded message");
             state = State.SUCCESS;
             Bundle bundle = message.getData();
-
             /***********************************************************************/
-            Bitmap barcode = bundle == null ? null :
-                    (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);//���ñ����߳�
+            Bitmap bitmap = bundle == null ? null : (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);
 
-            activity.handleDecode((Result) message.obj, barcode);//���ؽ��?        /***********************************************************************/
+            activity.handleDecode((Result) message.obj, bitmap);
+            /***********************************************************************/
         } else if (message.what == R.id.decode_failed) {// We're decoding as fast as possible, so when one decode fails, start another.
             state = State.PREVIEW;
             CameraManager.get().requestPreviewFrame(decodeThread.getHandler(), R.id.decode);

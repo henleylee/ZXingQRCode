@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
-import com.liyunlong.zxing.activity.MipcaActivityCapture;
+import com.liyunlong.zxing.activity.CaptureActivity;
 import com.liyunlong.zxing.decoding.DecodeBitmap;
 import com.liyunlong.zxing.encoding.EncodingHandler;
 
@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     //显示扫描到的内容
-                    mTextView.setText(bundle.getString(MipcaActivityCapture.SCAN_RESULT));
+                    mTextView.setText(bundle.getString(CaptureActivity.SCAN_RESULT));
                     //显示
-                    mImageView.setImageBitmap((Bitmap) data.getParcelableExtra(MipcaActivityCapture.SCAN_BITMAP));
+                    mImageView.setImageBitmap((Bitmap) data.getParcelableExtra(CaptureActivity.SCAN_BITMAP));
                 }
                 break;
         }
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.button1: // 扫描二维码/条形码
                 Intent intent = new Intent();
-                intent.setClass(MainActivity.this, MipcaActivityCapture.class);
+                intent.setClass(MainActivity.this, CaptureActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
                 break;
@@ -125,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, GeneratorActivity.class));
                 break;
             case R.id.button5: // 识别二维码/条形码
-                Result result = DecodeBitmap.parseQRcodeFromView(mImageView);
+                Result result = DecodeBitmap.decodeQRcodeFromView(mImageView);
 //                View rootView = getWindow().getDecorView().getRootView();
-//                Result result = DecodeBitmap.parseQRcodeFromView(rootView);
+//                Result result = DecodeBitmap.decodeQRcodeFromView(rootView);
                 if (result == null) {
                     showToast("识别失败");
                 } else {

@@ -36,7 +36,7 @@ final class PreviewCallback implements Camera.PreviewCallback {
         this.useOneShotPreviewCallback = useOneShotPreviewCallback;
     }
 
-    void setHandler(Handler previewHandler, int previewMessage) {
+    public void setHandler(Handler previewHandler, int previewMessage) {
         this.previewHandler = previewHandler;
         this.previewMessage = previewMessage;
     }

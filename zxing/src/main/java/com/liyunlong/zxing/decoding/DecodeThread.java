@@ -22,7 +22,7 @@ import android.os.Looper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.ResultPointCallback;
-import com.liyunlong.zxing.activity.MipcaActivityCapture;
+import com.liyunlong.zxing.activity.CaptureActivity;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -34,12 +34,12 @@ import java.util.concurrent.CountDownLatch;
 final class DecodeThread extends Thread {
 
     public static final String BARCODE_BITMAP = "barcode_bitmap";
-    private final MipcaActivityCapture activity;
+    private final CaptureActivity activity;
     private final Hashtable<DecodeHintType, Object> hints;
     private Handler handler;
     private final CountDownLatch handlerInitLatch;
 
-    DecodeThread(MipcaActivityCapture activity,
+    DecodeThread(CaptureActivity activity,
                  Vector<BarcodeFormat> decodeFormats,
                  String characterSet,
                  ResultPointCallback resultPointCallback) {

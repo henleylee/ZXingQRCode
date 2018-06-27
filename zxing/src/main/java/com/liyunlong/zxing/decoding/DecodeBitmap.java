@@ -8,7 +8,6 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
@@ -29,7 +28,7 @@ public class DecodeBitmap {
      *
      * @param view View对象
      */
-    public static Result parseQRcodeFromView(View view) {
+    public static Result decodeQRcodeFromView(View view) {
         //设置缓存
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
@@ -40,7 +39,7 @@ public class DecodeBitmap {
         }
         //禁用DrawingCahce否则会影响性能 ,而且不禁止会导致每次截图到保存的是第一次截图缓存的位图
         view.setDrawingCacheEnabled(false);
-        return parseQRcodeFromBitmap(bitmap);
+        return decodeQRcodeFromBitmap(bitmap);
     }
 
     /**
@@ -48,7 +47,7 @@ public class DecodeBitmap {
      *
      * @param bitmapPath 图片的绝对路径
      */
-    public static Result parseQRcodeFromPath(String bitmapPath) {
+    public static Result decodeQRcodeFromPath(String bitmapPath) {
         //获取到待解析的图片
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -59,7 +58,7 @@ public class DecodeBitmap {
         }
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath, options);
-        return parseQRcodeFromBitmap(bitmap);
+        return decodeQRcodeFromBitmap(bitmap);
     }
 
     /**
@@ -67,16 +66,12 @@ public class DecodeBitmap {
      *
      * @param bitmap 二维码图片
      */
-    public static Result parseQRcodeFromBitmap(Bitmap bitmap) {
+    public static Result decodeQRcodeFromBitmap(Bitmap bitmap) {
         if (bitmap == null) {
             return null;
         }
         //新建一个RGBLuminanceSource对象，将bitmap图片传给此对象
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int[] data = new int[width * height];
-        bitmap.getPixels(data, 0, width, 0, 0, width, height);
-        RGBLuminanceSource rgbLuminanceSource = new RGBLuminanceSource(width, height, data);
+        RGBLuminanceSource rgbLuminanceSource = new RGBLuminanceSource(bitmap);
         //将图片转换成二进制图片
         BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(rgbLuminanceSource));
         //解析转换类型UTF-8
@@ -93,37 +88,5 @@ public class DecodeBitmap {
         }
         return result;
     }
-
-//    private static class RGBLuminanceSource extends LuminanceSource {
-//
-//        private byte bitmapPixels[];
-//
-//        RGBLuminanceSource(Bitmap bitmap) {
-//            super(bitmap.getWidth(), bitmap.getHeight());
-//
-//            // 首先，要取得该图片的像素数组内容
-//            int[] data = new int[bitmap.getWidth() * bitmap.getHeight()];
-//            this.bitmapPixels = new byte[bitmap.getWidth() * bitmap.getHeight()];
-//            bitmap.getPixels(data, 0, getWidth(), 0, 0, getWidth(), getHeight());
-//
-//            // 将int数组转换为byte数组，也就是取像素值中蓝色值部分作为辨析内容
-//            for (int i = 0; i < data.length; i++) {
-//                this.bitmapPixels[i] = (byte) data[i];
-//            }
-//        }
-//
-//        @Override
-//        public byte[] getMatrix() {
-//            // 返回我们生成好的像素数据
-//            return bitmapPixels;
-//        }
-//
-//        @Override
-//        public byte[] getRow(int y, byte[] row) {
-//            // 这里要得到指定行的像素数据
-//            System.arraycopy(bitmapPixels, y * getWidth(), row, 0, getWidth());
-//            return row;
-//        }
-//    }
 
 }

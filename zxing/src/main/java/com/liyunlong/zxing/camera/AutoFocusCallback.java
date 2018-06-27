@@ -30,7 +30,7 @@ final class AutoFocusCallback implements Camera.AutoFocusCallback {
     private Handler autoFocusHandler;
     private int autoFocusMessage;
 
-    void setHandler(Handler autoFocusHandler, int autoFocusMessage) {
+    public void setHandler(Handler autoFocusHandler, int autoFocusMessage) {
         this.autoFocusHandler = autoFocusHandler;
         this.autoFocusMessage = autoFocusMessage;
     }

@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 final class CameraConfigurationManager {
@@ -58,8 +57,20 @@ final class CameraConfigurationManager {
         Display display = manager.getDefaultDisplay();
         screenResolution = new Point(display.getWidth(), display.getHeight());
         Log.d(TAG, "Screen resolution: " + screenResolution);
+
+        //图片拉伸
+//        Point screenResolutionForCamera = new Point();
+//        screenResolutionForCamera.x = screenResolution.x;
+//        screenResolutionForCamera.y = screenResolution.y;
+//        // preview size is always something like 480*320, other 320*480
+//        if (screenResolution.x < screenResolution.y) {
+//            screenResolutionForCamera.x = screenResolution.y;
+//            screenResolutionForCamera.y = screenResolution.x;
+//        }
+
         cameraResolution = getCameraResolution(parameters, screenResolution);
         Log.d(TAG, "Camera resolution: " + screenResolution);
+
     }
 
     /**
@@ -76,10 +87,7 @@ final class CameraConfigurationManager {
         setZoom(parameters);
         //setSharpness(parameters);
         //modify here
-
-//    camera.setDisplayOrientation(90);
-        //����2.1
-        setDisplayOrientation(camera, 90);
+        camera.setDisplayOrientation(90);
         camera.setParameters(parameters);
     }
 
@@ -190,7 +198,7 @@ final class CameraConfigurationManager {
         // Restrict Behold II check to Cupcake, per Samsung's advice
         //if (Build.MODEL.contains("Behold II") &&
         //    CameraManager.SDK_INT == Build.VERSION_CODES.CUPCAKE) {
-        if (Build.MODEL.contains("Behold II") && CameraManager.SDK_INT == 3) { // 3 = Cupcake
+        if (Build.MODEL.contains("Behold II") && Build.VERSION.SDK_INT == Build.VERSION_CODES.CUPCAKE) { // 3 = Cupcake
             parameters.set("flash-value", 1);
         } else {
             parameters.set("flash-value", 2);
@@ -265,22 +273,6 @@ final class CameraConfigurationManager {
 
     public static int getDesiredSharpness() {
         return DESIRED_SHARPNESS;
-    }
-
-    /**
-     * compatible  1.6
-     *
-     * @param camera
-     * @param angle
-     */
-    protected void setDisplayOrientation(Camera camera, int angle) {
-        Method downPolymorphic;
-        try {
-            downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", new Class[]{int.class});
-            if (downPolymorphic != null)
-                downPolymorphic.invoke(camera, new Object[]{angle});
-        } catch (Exception e1) {
-        }
     }
 
 }

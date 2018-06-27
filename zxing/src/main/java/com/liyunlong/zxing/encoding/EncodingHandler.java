@@ -119,8 +119,10 @@ public class EncodingHandler {
      */
     public static Bitmap createQRCode(String content, int size, int color) {
         try {
-            Hashtable<EncodeHintType, String> hints = new Hashtable<>();
+            Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
             hints.put(EncodeHintType.CHARACTER_SET, CHARACTER_SET);
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+            hints.put(EncodeHintType.MARGIN, 1); // default is 4
             BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
             int[] pixels = new int[size * size];
             for (int y = 0; y < size; y++) {
@@ -191,7 +193,7 @@ public class EncodingHandler {
             // 设置容错级别，默认为ErrorCorrectionLevel.L
             // 因为中间加入logo所以建议你把容错级别调至H,否则可能会出现识别不了
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-            hints.put(EncodeHintType.MARGIN, 2); // default is 4
+            hints.put(EncodeHintType.MARGIN, 1); // default is 4
 //            hints.put(EncodeHintType.MAX_SIZE, 350);
 //            hints.put(EncodeHintType.MIN_SIZE, 100);
             BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
