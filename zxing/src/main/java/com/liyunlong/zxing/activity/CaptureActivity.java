@@ -286,19 +286,21 @@ public class CaptureActivity extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            ContentResolver resolver = getContentResolver();
-            // 照片的原始资源地址
-            Uri originalUri = data.getData();
-            try {
-                // 使用ContentProvider通过URI获取原始图片
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, originalUri);
-                // 压缩图片
-                bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
-                // 开始对图像资源解码
-                Result result = DecodeBitmap.decodeQRcodeFromBitmap(bitmap);
-                handleDecode(result, bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (requestCode == REQUEST_CODE_SCAN_GALLERY) {
+                ContentResolver resolver = getContentResolver();
+                // 照片的原始资源地址
+                Uri originalUri = data.getData();
+                try {
+                    // 使用ContentProvider通过URI获取原始图片
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, originalUri);
+                    // 压缩图片
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
+                    // 开始对图像资源解码
+                    Result result = DecodeBitmap.decodeQRcodeFromBitmap(bitmap);
+                    handleDecode(result, bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

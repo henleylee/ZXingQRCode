@@ -54,6 +54,9 @@ final class CameraConfigurationManager {
         previewFormatString = parameters.get("preview-format");
         Log.d(TAG, "Default preview format: " + previewFormat + '/' + previewFormatString);
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (manager == null) {
+            return;
+        }
         Display display = manager.getDefaultDisplay();
         screenResolution = new Point(display.getWidth(), display.getHeight());
         Log.d(TAG, "Screen resolution: " + screenResolution);
@@ -135,9 +138,9 @@ final class CameraConfigurationManager {
     private static Point findBestPreviewSizeValue(CharSequence previewSizeValueString, Point screenResolution) {
         int bestX = 0;
         int bestY = 0;
-        int diff = Integer.MAX_VALUE;
+        float diff = Float.MAX_VALUE;
+        Log.d(TAG, "screen point: "+screenResolution);
         for (String previewSize : COMMA_PATTERN.split(previewSizeValueString)) {
-
             previewSize = previewSize.trim();
             int dimPosition = previewSize.indexOf('x');
             if (dimPosition < 0) {
@@ -155,7 +158,10 @@ final class CameraConfigurationManager {
                 continue;
             }
 
-            int newDiff = Math.abs(newX - screenResolution.x) + Math.abs(newY - screenResolution.y);
+            //这一段是原来的代码
+            // int newDiff = Math.abs(newX - screenResolution.x) + Math.abs(newY - screenResolution.y);
+            //以下是修改后的代码
+            float newDiff = Math.abs(screenResolution.x * 1.0f / newY - screenResolution.y * 1.0f / newX);
             if (newDiff == 0) {
                 bestX = newX;
                 bestY = newY;
@@ -165,7 +171,6 @@ final class CameraConfigurationManager {
                 bestY = newY;
                 diff = newDiff;
             }
-
         }
 
         if (bestX > 0 && bestY > 0) {
