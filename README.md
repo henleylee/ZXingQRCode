@@ -11,7 +11,7 @@
 #### 打开扫描二维码/条形码的Activity： ####
 ```java
     Intent intent = new Intent();
-    intent.setClass(MainActivity.this, MipcaActivityCapture.class);
+    intent.setClass(MainActivity.this, CaptureActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
 ```
@@ -39,96 +39,132 @@
 ## 2. 生成条形码 ##
 ```java
     String content = editText.getText().toString(); // 要生成条形码的内容
-    int size = content.length();
-    for (int i = 0; i < size; i++) {
-        int c = content.charAt(i);
-        if ((19968 <= c && c < 40623)) { // 不能包含中文
-            Toast.makeText(getApplicationContext(), "text not be chinese", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    if (TextUtils.isEmpty(content)) {
+        showToast("Text can be not empty");
+        return;
     }
-    if (!TextUtils.isEmpty(content)) {
-        Bitmap oneCodeBitmap = EncodingHandler.createOneDCode(content); // 生成条形码
-        mImageView.setImageBitmap(oneCodeBitmap); // 展示生成的条形码
+    Pattern pattern = Pattern.compile("[\\u4e00-\\u9fa5]");
+    Matcher matcher = pattern.matcher(content);
+    if (matcher.find()) {
+        showToast("Text can not contain Chinese");
+        return;
     }
+    Bitmap oneCodeBitmap = EncodingHelper.with(content).createOneDCode(); // 生成条形码
+    imageView.setImageBitmap(oneCodeBitmap); // 展示生成的条形码
 ```
 
 ## 3. 生成二维码 ##
 ```java
     String content = editText.getText().toString(); // 要生成二维码的内容
-    if (!TextUtils.isEmpty(content)) {
-        Bitmap qrCodeBitmap = EncodingHandler.createQRCode(content); // 生成二维码
-        mImageView.setImageBitmap(qrCodeBitmap); // 展示生成的二维码
+    if (TextUtils.isEmpty(content)) {
+        showToast("Text can be not empty");
+        return;
     }
+    Bitmap qrCodeBitmap = EncodingHelper.with(contentString).createQRCode(); // 生成二维码
+    imageView.setImageBitmap(qrCodeBitmap); // 展示生成的二维码
 ```
 
 ## 4. 识别二维码/条形码(DecodeBitmap：解析图片辅助类) ##
 #### 4.1 根据View获取图片，并解析二维码将结果封装在Result对象中： ####
 ```java
-    public static Result parseQRcodeFromView(View view)
+    public static Result decodeQRcodeFromView(View view)
 ```
 
 #### 4.2 根据图片路径获取图片，并解析二维码将结果封装在Result对象中： ####
 ```java
-    public static Result parseQRcodeFromPath(String bitmapPath)
+    public static Result decodeQRcodeFromPath(String bitmapPath)
 ```
 
 #### 4.3 根据图片路径获取图片，并解析二维码将结果封装在Result对象中： ####
 ```java
-    public static Result parseQRcodeFromBitmap(Bitmap bitmap)
+    public static Result decodeQRcodeFromBitmap(Bitmap bitmap)
 ```
 
 注意：前两种方式得到图片后最终都会调用第三种方式。
 
-## 5. 花式二维码(EncodingHandler：二维码/条形码生成辅助类) ##
+## 5. 花式二维码(EncodingHelper：二维码/条形码生成辅助类) ##
 #### 5.1 生成二维码(二维码默认大小为500*500，颜色为黑色)： ####
 ```java
-    public static Bitmap createQRCode(String content)
+    EncodingHelper.with(String content)
+        .createQRCode()
 ```
 
 #### 5.2 生成二维码(二维码默认大小为500*500)： ####
 ```java
-    public static Bitmap createQRCode(String content, int color)
+    EncodingHelper.with(String content)
+        .color(int color)
+        .createQRCode()
 ```
 
 #### 5.3 生成二维码： ####
 ```java
-    public static Bitmap createQRCode(String content, int size, int color)
+    EncodingHelper.with(String content)
+        .size(int size)
+        .color(int color)
+        .createQRCode()
 ```
 
 #### 5.4 生成带Logo的二维码(二维码默认大小为500*500，颜色为黑色)： ####
 ```java
-    public static Bitmap createQRCodeWithLogo(String content, Bitmap bitmap)
+    EncodingHelper.with(String content)
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.5 生成带Logo的二维码(二维码默认颜色为黑色)： ####
 ```java
-    public static Bitmap createQRCodeWithLogo(String content, int size, Bitmap bitmap)
+    EncodingHelper.with(String content)
+        .size(int size)
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.6 生成带Logo的二维码(二维码默认大小为500*500)： ####
 ```java
-    public static Bitmap createQRCodeWithLogo(String content, Bitmap bitmap, int color)
+    EncodingHelper.with(String content).logo(Bitmap bitmap).createQRCode()
 ```
 
 #### 5.7 生成带Logo的二维码： ####
 ```java
-    public static Bitmap createQRCodeWithLogo(String content, int size, Bitmap bitmap, int color)
+    EncodingHelper.with(String content)
+        .size(int size).color(int color)
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.8 生成带Logo的二维码(四种颜色)： ####
 ```java
-    public static Bitmap createQRCodeWithLogo2(String content, Bitmap bitmap)
+    EncodingHelper.with(String content)
+        .fancyColors()
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.9 生成带Logo的二维码(四种颜色)： ####
 ```java
-    public static Bitmap createQRCodeWithLogo2(String content, int size, Bitmap bitmap)
+    EncodingHelper.with(String content)
+        .size(int size)
+        .fancyColors()
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.10 生成带Logo的二维码： ####
 ```java
-    public static Bitmap createQRCodeWithLogo2(String content, int size, Bitmap bitmap, int leftTopColor, int leftBottomColor, int rightTopColor, int rightBottomColor)
+    EncodingHelper.with(String content)
+        .size(int size)
+        .fancyColors(int[] fancyColors)
+        .logo(Bitmap bitmap)
+        .createQRCode()
+```
+
+#### 5.11 生成带背景的二维码： ####
+```java
+    EncodingHelper.with(String content)
+        .size(int size)
+        .color(int color)
+        .background(Bitmap bitmap)
+        .createQRCode()
 ```
 
 
