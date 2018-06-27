@@ -121,7 +121,9 @@
 
 #### 5.6 生成带Logo的二维码(二维码默认大小为500*500)： ####
 ```java
-    EncodingHelper.with(String content).logo(Bitmap bitmap).createQRCode()
+    EncodingHelper.with(String content)
+        .logo(Bitmap bitmap)
+        .createQRCode()
 ```
 
 #### 5.7 生成带Logo的二维码： ####
