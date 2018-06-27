@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.liyunlong.zxing.encoding.EncodingHandler;
+import com.liyunlong.zxing.encoding.EncodingHelper;
 
 /**
  * @author liyunlong
@@ -39,14 +39,14 @@ public class GeneratorActivity extends AppCompatActivity {
         qrcode5 = (ImageView) findViewById(R.id.qrcode5);
         qrcode6 = (ImageView) findViewById(R.id.qrcode6);
 
-        Bitmap bitmap = drawableToBitmap(getResources().getDrawable(R.mipmap.ic_launcher));
+        Bitmap bitmap = drawableToBitmap(getResources().getDrawable(R.drawable.sample_logo));
         Bitmap bitmap2 = drawableToBitmap(getResources().getDrawable(R.drawable.sample_big_xh));
-        qrcode1.setImageBitmap(EncodingHandler.createQRCode(URL));
-        qrcode2.setImageBitmap(EncodingHandler.createQRCode(URL, CUSTOM_COLOR));
-        qrcode3.setImageBitmap(EncodingHandler.createQRCodeWithLogo(URL, bitmap));
-        qrcode4.setImageBitmap(EncodingHandler.createQRCodeWithLogo(URL, bitmap, CUSTOM_COLOR));
-        qrcode5.setImageBitmap(EncodingHandler.createQRCodeWithLogo2(URL, bitmap));
-        qrcode6.setImageBitmap(EncodingHandler.createQRCodeWithBackground(URL, bitmap2));
+        qrcode1.setImageBitmap(EncodingHelper.with(URL).createQRCode());
+        qrcode2.setImageBitmap(EncodingHelper.with(URL).color(CUSTOM_COLOR).createQRCode());
+        qrcode3.setImageBitmap(EncodingHelper.with(URL).logo(bitmap).createQRCode());
+        qrcode4.setImageBitmap(EncodingHelper.with(URL).color(CUSTOM_COLOR).logo(bitmap).createQRCode());
+        qrcode5.setImageBitmap(EncodingHelper.with(URL).color(CUSTOM_COLOR).logo(bitmap).fancyColors().createQRCode());
+        qrcode6.setImageBitmap(EncodingHelper.with(URL).color(CUSTOM_COLOR).background(bitmap2).createQRCode());
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {

@@ -1,6 +1,7 @@
 package com.liyunlong.zxing.qrcode;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +21,10 @@ import android.widget.Toast;
 import com.google.zxing.Result;
 import com.liyunlong.zxing.activity.CaptureActivity;
 import com.liyunlong.zxing.decoding.DecodeBitmap;
-import com.liyunlong.zxing.encoding.EncodingHandler;
+import com.liyunlong.zxing.encoding.EncodingHelper;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.liyunlong.zxing.qrcode.R.id.result;
 
@@ -93,41 +98,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
                 break;
-            case R.id.button2: // 生成条形码
-                String content = qrStrEditText.getText().toString();
-                int size = content.length();
-                for (int i = 0; i < size; i++) {
-                    int c = content.charAt(i);
-                    if ((19968 <= c && c < 40623)) {
-                        Toast.makeText(getApplicationContext(), "text not be chinese", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
-                if (!TextUtils.isEmpty(content)) {
-                    Bitmap oneCodeBitmap = EncodingHandler.createOneDCode(content);
-                    mImageView.setImageBitmap(oneCodeBitmap);
-                    qrStrEditText.setText("");
-                    mTextView.setText(content);
-                }
-                break;
-            case R.id.button3: // 生成二维码
-                String contentString = qrStrEditText.getText().toString();
-                if (!contentString.equals("")) {
-                    Bitmap qrCodeBitmap = EncodingHandler.createQRCode(contentString);
-                    mImageView.setImageBitmap(qrCodeBitmap);
-                    qrStrEditText.setText("");
-                    mTextView.setText(contentString);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Text can be not empty", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.button4: // 生成二维码
+            case R.id.button2: // 生成二维码
                 startActivity(new Intent(this, GeneratorActivity.class));
                 break;
+            case R.id.button3: // 生成条形码
+                String content = qrStrEditText.getText().toString();
+                if (TextUtils.isEmpty(content)) {
+                    showToast("Text can be not empty");
+                    return;
+                }
+                Pattern pattern = Pattern.compile("[\\u4e00-\\u9fa5]");
+                Matcher matcher = pattern.matcher(content);
+                if (matcher.find()) {
+                    showToast("Text can not contain Chinese");
+                    return;
+                }
+                hideSoftInput(qrStrEditText);
+                Bitmap oneCodeBitmap = EncodingHelper.with(content).createOneDCode();
+                mImageView.setImageBitmap(oneCodeBitmap);
+                qrStrEditText.setText("");
+                mTextView.setText(content);
+                break;
+            case R.id.button4: // 生成二维码
+                String contentString = qrStrEditText.getText().toString();
+                if (TextUtils.isEmpty(contentString)) {
+                    showToast("Text can be not empty");
+                    return;
+                }
+                hideSoftInput(qrStrEditText);
+                Bitmap qrCodeBitmap = EncodingHelper.with(contentString).createQRCode();
+                mImageView.setImageBitmap(qrCodeBitmap);
+                qrStrEditText.setText("");
+                mTextView.setText(contentString);
+                break;
             case R.id.button5: // 识别二维码/条形码
+                hideSoftInput(qrStrEditText);
                 Result result = DecodeBitmap.decodeQRcodeFromView(mImageView);
-//                View rootView = getWindow().getDecorView().getRootView();
-//                Result result = DecodeBitmap.decodeQRcodeFromView(rootView);
                 if (result == null) {
                     showToast("识别失败");
                 } else {
@@ -144,6 +150,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             toast.setText(message);
         }
         toast.show();
+    }
+
+    /**
+     * 关闭软键盘
+     */
+    private boolean hideSoftInput(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            return inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        return false;
     }
 
 }
