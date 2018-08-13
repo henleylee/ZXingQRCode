@@ -6,9 +6,9 @@
     <color name="colorAccent">#FF4081</color>
 
     <!-- QRCode scanner color begin -->
-    <color name="viewfinder_mask">#60000000</color>
+    <color name="mask_color">#60000000</color>
     <color name="result_view">#B0000000</color>
-    <color name="viewfinder_frame">#90FFFFFF</color>
+    <color name="frame_color">#0098FF</color>
     <color name="result_point_color">#C0FFFF00</color>
     <color name="laser_color">#0098FF</color>
     <color name="corner_color">#0098FF</color>

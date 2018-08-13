@@ -4,23 +4,25 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.ComposeShader;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.SweepGradient;
+import android.support.annotation.IntDef;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
 import com.liyunlong.zxing.R;
 import com.liyunlong.zxing.camera.CameraManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -32,7 +34,8 @@ public class ViewfinderView extends View {
 
     private static final int[] SCANNER_ALPHA = {0, 64, 128, 192, 255, 192, 128, 64};
     private static final long ANIMATION_DELAY = 10L;
-    private static final int OPAQUE = 0xFF;
+    private static final int POINT_SIZE = 6;
+    private static final int POINT_OPAQUE = 0xFF;
     /**
      * 扫描区边角的宽
      */
@@ -55,6 +58,7 @@ public class ViewfinderView extends View {
     private static final int MIDDLE_LINE_PADDING = 6;
 
     private Paint paint;
+    private TextPaint textPaint;
     private Bitmap resultBitmap;
     //模糊区域颜色
     private int maskColor;
@@ -73,12 +77,24 @@ public class ViewfinderView extends View {
     //扫描区域提示文本字体颜色和大小
     private int labelTextColor;
     private float labelTextSize;
+    private float labelTextMargin;
+    private int labelTextLocation;
 
     public int scannerStart = 0;
     public int scannerEnd = 0;
 
     private Collection<ResultPoint> possibleResultPoints;
     private Collection<ResultPoint> lastPossibleResultPoints;
+
+    @IntDef({
+            LabelTextLocation.TOP,
+            LabelTextLocation.BOTTOM
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LabelTextLocation {
+        int TOP = 0;
+        int BOTTOM = 1;
+    }
 
     public ViewfinderView(Context context) {
         this(context, null);
@@ -94,6 +110,7 @@ public class ViewfinderView extends View {
         // Initialize these once for performance rather than calling them every time in onDraw().
         paint = new Paint();
         paint.setAntiAlias(true);
+        textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         scannerAlpha = 0;
         possibleResultPoints = new HashSet<>(5);
     }
@@ -107,15 +124,17 @@ public class ViewfinderView extends View {
     private void handleTypedArray(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ViewfinderView);
         try {
-            laserColor = typedArray.getColor(R.styleable.ViewfinderView_laser_color, 0x0098FF);
-            cornerColor = typedArray.getColor(R.styleable.ViewfinderView_corner_color, 0x0098FF);
-            frameColor = typedArray.getColor(R.styleable.ViewfinderView_frame_color, 0xFFFFFF);
+            laserColor = typedArray.getColor(R.styleable.ViewfinderView_laser_color, 0xFF0098FF);
+            cornerColor = typedArray.getColor(R.styleable.ViewfinderView_corner_color, 0xFF0098FF);
+            frameColor = typedArray.getColor(R.styleable.ViewfinderView_frame_color, 0xFF0098FF);
             resultPointColor = typedArray.getColor(R.styleable.ViewfinderView_result_point_color, 0xC0FFFF00);
             maskColor = typedArray.getColor(R.styleable.ViewfinderView_mask_color, 0x60000000);
             resultColor = typedArray.getColor(R.styleable.ViewfinderView_result_color, 0xB0000000);
             labelText = typedArray.getString(R.styleable.ViewfinderView_label_text);
             labelTextColor = typedArray.getColor(R.styleable.ViewfinderView_label_text_color, 0xFFFFFFFF);
-            labelTextSize = typedArray.getDimensionPixelSize(R.styleable.ViewfinderView_label_text_size, 45);
+            labelTextSize = typedArray.getDimension(R.styleable.ViewfinderView_label_text_size, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14f, getResources().getDisplayMetrics()));
+            labelTextMargin = typedArray.getDimension(R.styleable.ViewfinderView_label_text_margin, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24f, getResources().getDisplayMetrics()));
+            labelTextLocation = typedArray.getInt(R.styleable.ViewfinderView_label_text_location, LabelTextLocation.BOTTOM);
         } finally {
             typedArray.recycle();
         }
@@ -142,7 +161,7 @@ public class ViewfinderView extends View {
 
         if (resultBitmap != null) {
             // Draw the opaque result bitmap over the scanning rectangle
-            paint.setAlpha(OPAQUE);
+            paint.setAlpha(POINT_OPAQUE);
             canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
         } else {
             // Draw a two pixel solid black border inside the framing rect
@@ -157,7 +176,11 @@ public class ViewfinderView extends View {
             drawPossibleResultPoints(canvas, frame);
 
             // 只刷新扫描框的内容，其他地方不刷新(指定重绘区域，该方法会在子线程中执行)
-            postInvalidateDelayed(ANIMATION_DELAY, frame.left, frame.top, frame.right, frame.bottom);
+            postInvalidateDelayed(ANIMATION_DELAY,
+                    frame.left - POINT_SIZE,
+                    frame.top - POINT_SIZE,
+                    frame.right + POINT_SIZE,
+                    frame.bottom + POINT_SIZE);
         }
     }
 
@@ -185,8 +208,8 @@ public class ViewfinderView extends View {
      */
     private void drawFrame(Canvas canvas, Rect frame) {
         paint.setColor(frameColor);
-        canvas.drawRect(frame.left, frame.top, frame.right + 1, frame.top + 1, paint);
-        canvas.drawRect(frame.left, frame.top + 1, frame.left + 1, frame.bottom - 1, paint);
+        canvas.drawRect(frame.left, frame.top, frame.right + 1, frame.top + 2, paint);
+        canvas.drawRect(frame.left, frame.top + 2, frame.left + 2, frame.bottom - 1, paint);
         canvas.drawRect(frame.right - 1, frame.top, frame.right + 1, frame.bottom - 1, paint);
         canvas.drawRect(frame.left, frame.bottom - 1, frame.right + 1, frame.bottom + 1, paint);
     }
@@ -220,26 +243,28 @@ public class ViewfinderView extends View {
      * @param frame
      */
     private void drawTextInfo(Canvas canvas, Rect frame) {
-        if (TextUtils.isEmpty(labelText)) {
-            return;
+        if (!TextUtils.isEmpty(labelText)) {
+            textPaint.setColor(labelTextColor);
+            textPaint.setTextSize(labelTextSize);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            if (labelTextLocation == LabelTextLocation.BOTTOM) {
+                canvas.drawText(labelText, frame.left + frame.width() / 2, frame.bottom + labelTextMargin, textPaint);
+            } else {
+                canvas.drawText(labelText, frame.left + frame.width() / 2, frame.top - labelTextMargin, textPaint);
+            }
         }
-        paint.setColor(labelTextColor);
-        paint.setTextSize(labelTextSize);
-        paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(labelText, frame.left + frame.width() / 2, frame.bottom + CORNER_RECT_HEIGHT * 2.0f, paint);
     }
 
-    //绘制扫描线
-
+    /**
+     * 绘制扫描线
+     *
+     * @param canvas
+     * @param frame
+     */
     private void drawLaserScanner(Canvas canvas, Rect frame) {
         paint.setColor(laserColor);
-        //扫描线闪烁效果
-        // paint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
-        // scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
-        // int middle = frame.height() / 2 + frame.top;
-        //  canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
 
-        //线性渐变
+        // 线性渐变
         LinearGradient linearGradient = new LinearGradient(
                 frame.left, scannerStart,
                 frame.left, scannerStart + SCANNER_LINE_HEIGHT,
@@ -247,6 +272,7 @@ public class ViewfinderView extends View {
                 laserColor,
                 Shader.TileMode.MIRROR);
 
+        // 环形渲染
         RadialGradient radialGradient = new RadialGradient(
                 (float) (frame.left + frame.width() / 2),
                 (float) (scannerStart + SCANNER_LINE_HEIGHT / 2),
@@ -254,14 +280,6 @@ public class ViewfinderView extends View {
                 laserColor,
                 shadeColor(laserColor),
                 Shader.TileMode.MIRROR);
-
-        SweepGradient sweepGradient = new SweepGradient(
-                (float) (frame.left + frame.width() / 2),
-                (float) (scannerStart + SCANNER_LINE_HEIGHT),
-                shadeColor(laserColor),
-                laserColor);
-
-        ComposeShader composeShader = new ComposeShader(radialGradient, linearGradient, PorterDuff.Mode.ADD);
 
         paint.setShader(radialGradient);
         if (scannerStart <= scannerEnd) {
@@ -300,17 +318,18 @@ public class ViewfinderView extends View {
         } else {
             possibleResultPoints = new HashSet<>(5);
             lastPossibleResultPoints = currentPossible;
-            paint.setAlpha(OPAQUE);
+            paint.setAlpha(POINT_OPAQUE);
             paint.setColor(resultPointColor);
             for (ResultPoint point : currentPossible) {
-                canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), 6.0f, paint);
+                canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), POINT_SIZE, paint);
             }
         }
         if (currentLast != null) {
-            paint.setAlpha(OPAQUE / 2);
+            paint.setAlpha(POINT_OPAQUE / 2);
             paint.setColor(resultPointColor);
+            float radius = POINT_SIZE / 2.0f;
             for (ResultPoint point : currentLast) {
-                canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), 3.0f, paint);
+                canvas.drawCircle(frame.left + point.getX(), frame.top + point.getY(), radius, paint);
             }
         }
     }
@@ -322,6 +341,10 @@ public class ViewfinderView extends View {
     }
 
     public void drawViewfinder() {
+        Bitmap resultBitmap = this.resultBitmap;
+        if (resultBitmap != null) {
+            resultBitmap.recycle();
+        }
         this.resultBitmap = null;
         invalidate();
     }

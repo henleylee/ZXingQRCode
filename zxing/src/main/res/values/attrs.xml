@@ -21,6 +21,11 @@
         <attr name="label_text" format="string|reference" />
         <attr name="label_text_color" format="color|reference" />
         <attr name="label_text_size" format="dimension|reference" />
+        <attr name="label_text_margin" format="dimension|reference" />
+        <attr name="label_text_location" format="enum">
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>

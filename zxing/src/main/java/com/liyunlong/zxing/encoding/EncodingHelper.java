@@ -24,8 +24,9 @@ public class EncodingHelper {
 
     private static final int BLACK = 0xff000000;
     private static final int WHITE = 0xffffffff;
-    private static final int DEFAULT_WIDTH = 500;
-    private static final int DEFAULT_HEIGHT = 150;
+    private static final int DEFAULT_QRCODE_SIZE = 500;
+    private static final int DEFAULT_ONEDCODE_WIDTH = 800;
+    private static final int DEFAULT_ONEDCODE_HEIGHT = 200;
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final int[] FANCY_COLORS = {0xFF0094FF, 0xFFFED545, 0xFF000000, 0xFF5ACF00};
 
@@ -112,10 +113,10 @@ public class EncodingHelper {
 
     public Bitmap createOneDCode() {
         if (width <= 0) {
-            width = DEFAULT_WIDTH;
+            width = DEFAULT_ONEDCODE_WIDTH;
         }
         if (height <= 0) {
-            height = DEFAULT_HEIGHT;
+            height = DEFAULT_ONEDCODE_HEIGHT;
         }
         if (isContainChinese(content)) {
             throw new IllegalArgumentException("The content cannot contain Chinese.");
@@ -125,10 +126,10 @@ public class EncodingHelper {
 
     public Bitmap createQRCode() {
         if (width <= 0) {
-            width = DEFAULT_WIDTH;
+            width = DEFAULT_QRCODE_SIZE;
         }
         if (height <= 0) {
-            height = DEFAULT_WIDTH;
+            height = DEFAULT_QRCODE_SIZE;
         }
         return createQRCode(content, width, height, color, fancyColors, charset, logoBitmap, backgroundBitmap);
     }
@@ -144,7 +145,10 @@ public class EncodingHelper {
     private static Bitmap createOneDCode(String content, int width, int height, int color) {
         try {
             // 生成一维条码,编码时指定大小,不要生成了图片以后再进行缩放,这样会模糊导致识别失败
-            BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.CODE_128, width, height);
+            Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+            hints.put(EncodeHintType.MARGIN, 1); // default is 4
+            BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.CODE_128, width, height, hints);
             int matrixWidth = matrix.getWidth();
             int matrixHeight = matrix.getHeight();
             int[] pixels = new int[matrixWidth * matrixHeight];

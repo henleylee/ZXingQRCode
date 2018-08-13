@@ -230,16 +230,17 @@ public final class CameraManager {
      */
     public Rect getFramingRect() {
         Point screenResolution = configManager.getScreenResolution();
-        if (screenResolution == null)
+        if (screenResolution == null) {
             return null;
+        }
         if (framingRect == null) {
             if (camera == null) {
                 return null;
             }
 
             //修改之后
-            int width = screenResolution.x * 7 / 10;
-            int height = screenResolution.y * 7 / 10;
+            int width = screenResolution.x * 6 / 10;
+            int height = screenResolution.y * 6 / 10;
 
             if (height >= width) { //竖屏
                 height = width;
