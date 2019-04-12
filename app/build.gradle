@@ -11,12 +11,29 @@ android {
         targetSdkVersion config.targetSdkVersion
         versionCode config.versionCode
         versionName config.versionName
-        applicationId "com.Henley.zxing.qrcode"
+        applicationId "com.henley.zxing.qrcode"
     }
+
+    signingConfigs {
+
+        henley {
+            storeFile file('./henley.jks')
+            storePassword '123456'
+            keyAlias 'henley'
+            keyPassword '123456'
+        }
+
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.henley
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.henley
         }
     }
 }
