@@ -1,14 +1,16 @@
 apply plugin: 'com.android.library'
 
+def config = rootProject.ext.android // 配置
+
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion config.compileSdkVersion
+    buildToolsVersion config.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion config.minSdkVersion
+        targetSdkVersion config.targetSdkVersion
+        versionCode config.versionCode
+        versionName config.versionName
     }
     buildTypes {
         release {
@@ -20,6 +22,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly 'com.android.support:appcompat-v7:27.1.1'
-    api 'com.google.zxing:core:3.3.3'
+    compileOnly "com.android.support:appcompat-v7:$supportVersion"
+    api "com.google.zxing:core:$zxingVersion"
 }
