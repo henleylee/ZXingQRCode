@@ -46,7 +46,7 @@
 
         </FrameLayout>
 
-        <com.liyunlong.zxing.view.ViewfinderView
+        <com.henley.zxing.view.ViewfinderView
             android:id="@+id/viewfinder_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

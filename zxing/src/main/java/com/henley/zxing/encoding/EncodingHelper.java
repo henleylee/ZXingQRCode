@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.encoding;
+package com.henley.zxing.encoding;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * 二维码/条形码生成辅助类
  *
- * @author liyunlong
+ * @author Henley
  * @date 2018/6/27 14:45
  */
 public class EncodingHelper {

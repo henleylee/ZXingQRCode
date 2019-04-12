@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.qrcode;
+package com.henley.zxing.qrcode;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import com.liyunlong.zxing.encoding.EncodingHelper;
+import com.henley.zxing.encoding.EncodingHelper;
 
 /**
- * @author liyunlong
+ * @author Henley
  * @date 2017/1/19 18:28
  */
 public class GeneratorActivity extends AppCompatActivity {

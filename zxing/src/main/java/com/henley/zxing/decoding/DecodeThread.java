@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liyunlong.zxing.decoding;
+package com.henley.zxing.decoding;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -22,7 +22,7 @@ import android.os.Looper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.ResultPointCallback;
-import com.liyunlong.zxing.activity.CaptureActivity;
+import com.henley.zxing.activity.CaptureActivity;
 
 import java.util.Hashtable;
 import java.util.Vector;

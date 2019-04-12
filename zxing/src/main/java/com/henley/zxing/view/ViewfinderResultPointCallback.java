@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liyunlong.zxing.view;
+package com.henley.zxing.view;
 
 import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;

@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.qrcode;
+package com.henley.zxing.qrcode;
 
 import android.Manifest;
 import android.content.Context;
@@ -19,14 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
-import com.liyunlong.zxing.activity.CaptureActivity;
-import com.liyunlong.zxing.decoding.DecodeBitmap;
-import com.liyunlong.zxing.encoding.EncodingHelper;
+import com.henley.zxing.activity.CaptureActivity;
+import com.henley.zxing.decoding.DecodeBitmap;
+import com.henley.zxing.encoding.EncodingHelper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.liyunlong.zxing.qrcode.R.id.result;
+import static com.henley.zxing.qrcode.R.id.result;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.activity;
+package com.henley.zxing.activity;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -34,13 +34,13 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
-import com.liyunlong.zxing.R;
-import com.liyunlong.zxing.camera.CameraManager;
-import com.liyunlong.zxing.decoding.CaptureActivityHandler;
-import com.liyunlong.zxing.decoding.DecodeBitmap;
-import com.liyunlong.zxing.decoding.InactivityTimer;
-import com.liyunlong.zxing.decoding.RGBLuminanceSource;
-import com.liyunlong.zxing.view.ViewfinderView;
+import com.henley.zxing.R;
+import com.henley.zxing.camera.CameraManager;
+import com.henley.zxing.decoding.CaptureActivityHandler;
+import com.henley.zxing.decoding.DecodeBitmap;
+import com.henley.zxing.decoding.InactivityTimer;
+import com.henley.zxing.decoding.RGBLuminanceSource;
+import com.henley.zxing.view.ViewfinderView;
 
 import java.io.IOException;
 import java.util.Hashtable;

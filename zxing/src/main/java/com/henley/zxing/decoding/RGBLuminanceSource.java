@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liyunlong.zxing.decoding;
+package com.henley.zxing.decoding;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.view;
+package com.henley.zxing.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -18,8 +18,8 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
-import com.liyunlong.zxing.R;
-import com.liyunlong.zxing.camera.CameraManager;
+import com.henley.zxing.R;
+import com.henley.zxing.camera.CameraManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * @author liyunlong
+ * @author Henley
  * @date 2018/6/26 16:00
  */
 public class ViewfinderView extends View {

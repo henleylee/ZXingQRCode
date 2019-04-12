@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
     defaultConfig {
-        applicationId "com.liyunlong.zxing.qrcode"
+        applicationId "com.Henley.zxing.qrcode"
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1

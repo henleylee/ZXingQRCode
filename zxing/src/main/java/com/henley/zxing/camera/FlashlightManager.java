@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liyunlong.zxing.camera;
+package com.henley.zxing.camera;
 
 import android.os.IBinder;
 import android.util.Log;

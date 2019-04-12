@@ -1,4 +1,4 @@
-package com.liyunlong.zxing.decoding;
+package com.henley.zxing.decoding;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,7 +16,7 @@ import java.util.Hashtable;
 /**
  * 解析图片辅助类
  *
- * @author liyunlong
+ * @author Henley
  * @date 2017/2/3 16:08
  */
 public class DecodeBitmap {

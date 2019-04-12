@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liyunlong.zxing.decoding;
+package com.henley.zxing.decoding;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,10 +27,10 @@ import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.liyunlong.zxing.R;
-import com.liyunlong.zxing.activity.CaptureActivity;
-import com.liyunlong.zxing.camera.CameraManager;
-import com.liyunlong.zxing.view.ViewfinderResultPointCallback;
+import com.henley.zxing.R;
+import com.henley.zxing.activity.CaptureActivity;
+import com.henley.zxing.camera.CameraManager;
+import com.henley.zxing.view.ViewfinderResultPointCallback;
 
 import java.util.Vector;
 
