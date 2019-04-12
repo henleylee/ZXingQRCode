@@ -6,6 +6,10 @@
 #### 花式二维码： ####
 ![](/screenshots/花式二维码.png)
 
+## APK Demo ##
+
+下载 [APK-Demo](https://github.com/HenleyLee/ZXingQRCode/raw/master/app/app-release.apk)
+
 ## 使用方法 ##
 ### 1. 扫描二维码/条形码 ###
 #### 打开扫描二维码/条形码的Activity： ####
