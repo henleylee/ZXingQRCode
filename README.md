@@ -1,4 +1,4 @@
-# ZXingQRCode-master —— 基于ZXing的二维码生成、扫描、识别以及花式二维码
+# ZXingQRCode —— 基于ZXing的二维码生成、扫描、识别以及花式二维码
 
 ## 效果演示 ##
 #### 功能展示： ####
@@ -6,8 +6,8 @@
 #### 花式二维码： ####
 ![](/screenshots/花式二维码.png)
 
-
-## 1. 扫描二维码/条形码 ##
+## 使用方法 ##
+### 1. 扫描二维码/条形码 ###
 #### 打开扫描二维码/条形码的Activity： ####
 ```java
     Intent intent = new Intent();
@@ -36,7 +36,7 @@
     }
 ```
 
-## 2. 生成条形码 ##
+### 2. 生成条形码 ###
 ```java
     String content = editText.getText().toString(); // 要生成条形码的内容
     if (TextUtils.isEmpty(content)) {
@@ -53,7 +53,7 @@
     imageView.setImageBitmap(oneCodeBitmap); // 展示生成的条形码
 ```
 
-## 3. 生成二维码 ##
+### 3. 生成二维码 ###
 ```java
     String content = editText.getText().toString(); // 要生成二维码的内容
     if (TextUtils.isEmpty(content)) {
@@ -64,7 +64,7 @@
     imageView.setImageBitmap(qrCodeBitmap); // 展示生成的二维码
 ```
 
-## 4. 识别二维码/条形码(DecodeBitmap：解析图片辅助类) ##
+### 4. 识别二维码/条形码(DecodeBitmap：解析图片辅助类) ###
 #### 4.1 根据View获取图片，并解析二维码将结果封装在Result对象中： ####
 ```java
     public static Result decodeQRcodeFromView(View view)
@@ -82,7 +82,7 @@
 
 注意：前两种方式得到图片后最终都会调用第三种方式。
 
-## 5. 花式二维码(EncodingHelper：二维码/条形码生成辅助类) ##
+### 5. 花式二维码(EncodingHelper：二维码/条形码生成辅助类) ###
 #### 5.1 生成二维码(二维码默认大小为500*500，颜色为黑色)： ####
 ```java
     EncodingHelper.with(String content)
